@@ -69,8 +69,7 @@ export function EntriesPage() {
   const handleSave = () => {
     if (!editing || !form.onePercentAction.trim()) return
     upsertDailyEntry({
-      id: editing.id,
-      date: editing.date,
+      ...editing,
       energy: form.energy,
       mood: form.mood || undefined,
       onePercentAction: form.onePercentAction.trim(),

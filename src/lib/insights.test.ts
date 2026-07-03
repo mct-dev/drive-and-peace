@@ -5,6 +5,10 @@ import type { DailyEntry } from '../types'
 const entry = (overrides: Partial<DailyEntry> & Pick<DailyEntry, 'date'>): DailyEntry => ({
   id: overrides.id ?? '1',
   onePercentAction: overrides.onePercentAction ?? 'action',
+  missions: overrides.missions ?? [],
+  tasks: overrides.tasks ?? [],
+  nonNegotiables: overrides.nonNegotiables ?? [],
+  schedule: overrides.schedule ?? [],
   createdAt: '2026-01-01',
   updatedAt: '2026-01-01',
   ...overrides,

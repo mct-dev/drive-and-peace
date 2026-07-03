@@ -9,6 +9,8 @@
   --color-border: #e4e2dd;
   --color-accent: #4a5d52;
   --color-accent-soft: #e8ede9;
+  --color-diary-green: #6b8f71;
+  --color-diary-green-soft: #eef5ef;
 }
 
 @layer base {
@@ -42,5 +44,50 @@
   select,
   button {
     font: inherit;
+  }
+}
+
+@layer components {
+  .diary-heading {
+    @apply text-sm font-bold uppercase tracking-widest text-[var(--color-ink)];
+  }
+
+  .diary-day-heading {
+    @apply text-3xl font-bold uppercase tracking-tight text-[var(--color-ink)];
+  }
+
+  .diary-week-heading {
+    @apply text-2xl font-bold uppercase tracking-tight text-[var(--color-ink)];
+  }
+
+  .diary-label {
+    @apply text-xs font-semibold uppercase tracking-wide text-[var(--color-ink-muted)];
+  }
+
+  .diary-lined-input {
+    background-image: linear-gradient(transparent calc(100% - 1px), var(--color-border) 1px);
+    background-size: 100% 1.75rem;
+    background-repeat: repeat-y;
+  }
+
+  .diary-lined-textarea {
+    background-image: linear-gradient(transparent calc(1.75rem - 1px), var(--color-border) 1px);
+    background-size: 100% 1.75rem;
+    background-repeat: repeat-y;
+    line-height: 1.75rem;
+  }
+
+  .diary-section {
+    @apply rounded-xl border border-[var(--color-border)] bg-white p-4;
+  }
+
+  .diary-spread {
+    @apply grid gap-4 lg:grid-cols-2;
+  }
+
+  .diary-vertical-title {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    @apply text-2xl font-bold uppercase tracking-widest text-[var(--color-ink)];
   }
 }

@@ -1,4 +1,5 @@
 import { createSeedData, STORAGE_VERSION } from './seed'
+import { migrateToCurrent } from './migrate'
 import type { AppStorage } from '../types'
 
 const STORAGE_KEY = 'drive-peace-data'
@@ -18,11 +19,12 @@ export function isAppStorage(value: unknown): value is AppStorage {
   )
 }
 
-function migrate(data: AppStorage): AppStorage {
-  if (data.version < STORAGE_VERSION) {
-    return { ...data, version: STORAGE_VERSION }
+function migrate(data: AppStorage | Record<string, unknown>): AppStorage {
+  const version = (data as AppStorage).version ?? 1
+  if (version < STORAGE_VERSION) {
+    return migrateToCurrent(data as Record<string, unknown>)
   }
-  return data
+  return data as AppStorage
 }
 
 export function loadStorage(): AppStorage {
@@ -40,7 +42,11 @@ export function loadStorage(): AppStorage {
       saveStorage(seed)
       return seed
     }
-    return migrate(parsed)
+    const migrated = migrate(parsed)
+    if (migrated.version !== parsed.version || !parsed.program) {
+      saveStorage(migrated)
+    }
+    return migrated
   } catch {
     console.warn('Drive + Peace: failed to read storage, resetting.')
     const seed = createSeedData()

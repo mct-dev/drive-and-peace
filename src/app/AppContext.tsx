@@ -5,21 +5,40 @@ import type {
   CoachMessage,
   DailyEntry,
   Goal,
+  GoalMilestone,
   GoalVersion,
+  ProgramSettings,
   UserProfile,
   WeeklyReview,
 } from '../types'
 import { createId, nowISO } from '../lib/id'
 
+type ProfileFields = Pick<
+  UserProfile,
+  | 'name'
+  | 'why'
+  | 'vision'
+  | 'legacy'
+  | 'mission'
+  | 'coreValues'
+  | 'personToBecome'
+  | 'goals1yr'
+  | 'goals3yr'
+  | 'goals5yr'
+  | 'goals10yr'
+>
+
+type GoalFields = Pick<
+  Goal,
+  'title' | 'description' | 'why' | 'dailyAction' | 'milestones' | 'quarterStart' | 'sortOrder'
+>
+
 interface AppContextValue {
   data: AppStorage
-  updateProfile: (patch: Partial<Pick<UserProfile, 'name' | 'why' | 'vision' | 'legacy'>>) => void
+  updateProfile: (patch: Partial<ProfileFields>) => void
+  updateProgram: (patch: Partial<ProgramSettings>) => void
   addGoal: (goal: Omit<Goal, 'id' | 'createdAt' | 'updatedAt' | 'status'>) => void
-  updateGoal: (
-    id: string,
-    patch: Partial<Pick<Goal, 'title' | 'description' | 'why'>>,
-    reasonForChange?: string,
-  ) => void
+  updateGoal: (id: string, patch: Partial<GoalFields>, reasonForChange?: string) => void
   setGoalStatus: (id: string, status: Goal['status']) => void
   upsertDailyEntry: (entry: Omit<DailyEntry, 'id' | 'createdAt' | 'updatedAt'> & { id?: string }) => void
   deleteDailyEntry: (id: string) => void
@@ -39,6 +58,17 @@ function persist(data: AppStorage): AppStorage {
   return data
 }
 
+function goalChanged(goal: Goal, patch: Partial<GoalFields>): boolean {
+  return (
+    (patch.title !== undefined && patch.title !== goal.title) ||
+    (patch.description !== undefined && patch.description !== goal.description) ||
+    (patch.why !== undefined && patch.why !== goal.why) ||
+    (patch.dailyAction !== undefined && patch.dailyAction !== goal.dailyAction) ||
+    (patch.milestones !== undefined &&
+      JSON.stringify(patch.milestones) !== JSON.stringify(goal.milestones))
+  )
+}
+
 export function AppProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState<AppStorage>(() => loadStorage())
 
@@ -47,7 +77,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const updateProfile = useCallback(
-    (patch: Partial<Pick<UserProfile, 'name' | 'why' | 'vision' | 'legacy'>>) => {
+    (patch: Partial<ProfileFields>) => {
       mutate((prev) => ({
         ...prev,
         profile: { ...prev.profile, ...patch, updatedAt: nowISO() },
@@ -56,44 +86,52 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [mutate],
   )
 
+  const updateProgram = useCallback(
+    (patch: Partial<ProgramSettings>) => {
+      mutate((prev) => ({
+        ...prev,
+        program: { ...prev.program, ...patch },
+      }))
+    },
+    [mutate],
+  )
+
   const addGoal = useCallback(
     (goal: Omit<Goal, 'id' | 'createdAt' | 'updatedAt' | 'status'>) => {
       const t = nowISO()
+      const activeCount = data.goals.filter((g) => g.status === 'active').length
       const newGoal: Goal = {
         ...goal,
         id: createId(),
         status: 'active',
+        sortOrder: goal.sortOrder || activeCount + 1,
+        milestones: goal.milestones ?? [],
+        dailyAction: goal.dailyAction ?? '',
+        quarterStart: goal.quarterStart ?? t.slice(0, 10),
         createdAt: t,
         updatedAt: t,
       }
       mutate((prev) => ({ ...prev, goals: [...prev.goals, newGoal] }))
     },
-    [mutate],
+    [mutate, data.goals],
   )
 
   const updateGoal = useCallback(
-    (
-      id: string,
-      patch: Partial<Pick<Goal, 'title' | 'description' | 'why'>>,
-      reasonForChange?: string,
-    ) => {
+    (id: string, patch: Partial<GoalFields>, reasonForChange?: string) => {
       mutate((prev) => {
         const goal = prev.goals.find((g) => g.id === id)
         if (!goal) return prev
 
-        const changed =
-          (patch.title !== undefined && patch.title !== goal.title) ||
-          (patch.description !== undefined && patch.description !== goal.description) ||
-          (patch.why !== undefined && patch.why !== goal.why)
-
         let goalVersions = prev.goalVersions
-        if (changed && reasonForChange?.trim()) {
+        if (goalChanged(goal, patch) && reasonForChange?.trim()) {
           const version: GoalVersion = {
             id: createId(),
             goalId: id,
             title: goal.title,
             description: goal.description,
             why: goal.why,
+            dailyAction: goal.dailyAction,
+            milestones: goal.milestones as GoalMilestone[],
             reasonForChange: reasonForChange.trim(),
             createdAt: nowISO(),
           }
@@ -242,6 +280,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     () => ({
       data,
       updateProfile,
+      updateProgram,
       addGoal,
       updateGoal,
       setGoalStatus,
@@ -256,6 +295,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [
       data,
       updateProfile,
+      updateProgram,
       addGoal,
       updateGoal,
       setGoalStatus,
