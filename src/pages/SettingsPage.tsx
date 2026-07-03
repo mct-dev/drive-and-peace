@@ -7,6 +7,7 @@ import { TextField } from '../components/TextField'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { exportStorageJSON, importStorageJSON } from '../data/storage'
 import { formatDisplayDate } from '../lib/dates'
+import { APP_VERSION } from '../components/UpdateBanner'
 
 export function SettingsPage() {
   const { data, updateProfile, updateProgram, replaceAllData, resetAllData } = useApp()
@@ -133,7 +134,10 @@ export function SettingsPage() {
           No accounts, no servers, no analytics.
         </p>
         <p className="mt-3 text-xs text-[var(--color-ink-muted)]">
-          Drive + Peace v0.2.0 — local-first 1% diary
+          Drive + Peace v{APP_VERSION} — 1% diary format
+        </p>
+        <p className="mt-2 text-xs text-[var(--color-ink-muted)]">
+          If pages look outdated, hard-refresh (Ctrl+Shift+R) or clear site data for this URL.
         </p>
       </Card>
 

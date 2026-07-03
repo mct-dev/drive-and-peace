@@ -130,7 +130,9 @@ export function TodayPage() {
               Week {weekNumber} · Day {dayInWeek} of 7
             </p>
             <h1 className="diary-day-heading mt-1">Day {dayNumber}</h1>
-            <p className="mt-1 text-sm text-[var(--color-ink-muted)]">{formatDisplayDate(today)}</p>
+            <p className="mt-1 text-sm font-medium uppercase tracking-wide text-[var(--color-ink-muted)]">
+              {dayType === 'driver' ? "Driver's day" : 'Passenger day'} · {formatDisplayDate(today)}
+            </p>
           </div>
           <div className="flex gap-2">
             <Button

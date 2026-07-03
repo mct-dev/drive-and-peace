@@ -39,12 +39,16 @@ export function VisionPage() {
 
   return (
     <div className="space-y-5">
-      <header>
-        <p className="text-sm text-[var(--color-ink-muted)]">Vision</p>
-        <h1 className="mt-1 text-2xl font-semibold tracking-tight">My Vision</h1>
-        <p className="mt-2 text-sm text-[var(--color-ink-muted)]">
-          The north star for your drive — and your peace.
-        </p>
+      <header className="flex gap-4">
+        <div className="hidden shrink-0 sm:block">
+          <span className="diary-vertical-title">My Vision</span>
+        </div>
+        <div>
+          <h1 className="diary-day-heading sm:hidden">My Vision</h1>
+          <p className="mt-2 text-sm text-[var(--color-ink-muted)]">
+            The north star for your drive — and your peace.
+          </p>
+        </div>
       </header>
 
       <div className="diary-spread">

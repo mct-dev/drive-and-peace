@@ -131,7 +131,7 @@ export function WeeklyReviewPage() {
             ←
           </Button>
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight">WEEK {selectedWeekNumber}</h1>
+            <h1 className="diary-week-heading">Week {selectedWeekNumber}</h1>
             <p className="text-sm text-[var(--color-ink-muted)]">{formatWeekRange(weekStart)}</p>
           </div>
           <Button

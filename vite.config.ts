@@ -9,8 +9,13 @@ export default defineConfig({
     react(),
     tailwindcss(),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
       includeAssets: ['favicon.svg'],
+      workbox: {
+        skipWaiting: true,
+        clientsClaim: true,
+        cleanupOutdatedCaches: true,
+      },
       manifest: {
         name: 'Drive + Peace',
         short_name: 'Drive+Peace',
@@ -18,7 +23,7 @@ export default defineConfig({
         theme_color: '#f5f4f1',
         background_color: '#f5f4f1',
         display: 'standalone',
-        start_url: '/',
+        start_url: '/drive-and-peace/',
         icons: [
           {
             src: 'favicon.svg',

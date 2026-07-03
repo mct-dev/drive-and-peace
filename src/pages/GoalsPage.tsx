@@ -365,7 +365,7 @@ export function GoalsPage() {
       <header className="flex items-start justify-between gap-3">
         <div>
           <p className="text-sm text-[var(--color-ink-muted)]">Goals</p>
-          <h1 className="mt-1 text-2xl font-semibold tracking-tight">Find your 1%s</h1>
+          <h1 className="diary-day-heading mt-1">Find your 1%s</h1>
           <p className="mt-2 text-sm text-[var(--color-ink-muted)]">
             Three 3-month goals — each with a daily 1% action. Changing a goal is data, not failure.
           </p>
