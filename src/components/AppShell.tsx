@@ -11,7 +11,7 @@ export function AppShell() {
             Drive + Peace
           </h1>
         </header>
-        <main className="mx-auto w-full min-w-0 max-w-2xl flex-1 px-4 py-5 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-8">
+        <main className="mx-auto w-full min-w-0 max-w-4xl flex-1 px-4 py-5 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-8">
           <Outlet />
         </main>
       </div>

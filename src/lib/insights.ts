@@ -16,6 +16,11 @@ export interface InsightsSummary {
   commonWords: string[]
   driftSignals: string[]
   patternNotes: PatternNote[]
+  driverDays: number
+  passengerDays: number
+  averageDayRating: number | null
+  weeklyGridCellsFilled: number
+  weeklyGridCellsTotal: number
 }
 
 const STOP_WORDS = new Set([
@@ -58,6 +63,12 @@ const PATTERN_RULES: Array<{
     label: 'Possible pattern: stress-spiral',
     note: 'Stress language is clustering. Return to the next right action — one small step, not a full life redesign.',
   },
+  {
+    id: 'passenger-streak',
+    terms: ['passenger'],
+    label: 'Possible pattern: passenger days',
+    note: 'Several passenger days in a row may mean life has the wheel. Protect non-negotiables and lower the bar — progress still counts.',
+  },
 ]
 
 function tokenize(text: string): string[] {
@@ -68,14 +79,28 @@ function tokenize(text: string): string[] {
     .filter((w) => w.length > 2 && !STOP_WORDS.has(w))
 }
 
+function entryTextBlob(entry: DailyEntry): string {
+  return [
+    entry.freeformText,
+    entry.reflection,
+    entry.lesson,
+    entry.onePercentAction,
+    entry.possibleObstacle,
+    entry.planning,
+    entry.wins,
+    entry.bodyNote,
+    entry.mindNote,
+    ...entry.missions.map((m) => m.text),
+  ]
+    .filter(Boolean)
+    .join(' ')
+}
+
 export function extractCommonWords(entries: DailyEntry[], limit = 8): string[] {
   const counts = new Map<string, number>()
   const recent = entries.slice(0, 14)
   for (const entry of recent) {
-    const blob = [entry.freeformText, entry.lesson, entry.onePercentAction, entry.possibleObstacle]
-      .filter(Boolean)
-      .join(' ')
-    for (const word of tokenize(blob)) {
+    for (const word of tokenize(entryTextBlob(entry))) {
       counts.set(word, (counts.get(word) ?? 0) + 1)
     }
   }
@@ -87,10 +112,12 @@ export function extractCommonWords(entries: DailyEntry[], limit = 8): string[] {
 
 export function generatePatternNotes(entries: DailyEntry[], reviews: WeeklyReview[]): PatternNote[] {
   const blob = [
-    ...entries.slice(0, 20).map((e) =>
-      [e.freeformText, e.lesson, e.possibleObstacle, e.endOfDayResult].filter(Boolean).join(' '),
-    ),
-    ...reviews.slice(0, 5).map((r) => [r.patterns, r.drifted, r.misses].join(' ')),
+    ...entries.slice(0, 20).map((e) => entryTextBlob(e)),
+    ...entries
+      .slice(0, 10)
+      .filter((e) => e.dayType === 'passenger')
+      .map(() => 'passenger'),
+    ...reviews.slice(0, 5).map((r) => [r.patterns, r.drifted, r.misses, r.reflection].join(' ')),
   ]
     .join(' ')
     .toLowerCase()
@@ -105,10 +132,7 @@ export function generatePatternNotes(entries: DailyEntry[], reviews: WeeklyRevie
 export function extractDriftSignals(entries: DailyEntry[], reviews: WeeklyReview[]): string[] {
   const signals: string[] = []
   for (const entry of entries.slice(0, 10)) {
-    const blob = [entry.freeformText, entry.lesson, entry.possibleObstacle, entry.endOfDayResult]
-      .filter(Boolean)
-      .join(' ')
-      .toLowerCase()
+    const blob = entryTextBlob(entry).toLowerCase()
     for (const term of DRIFT_TERMS) {
       if (blob.includes(term)) signals.push(`"${term}" in entry ${entry.date}`)
     }
@@ -119,6 +143,20 @@ export function extractDriftSignals(entries: DailyEntry[], reviews: WeeklyReview
     }
   }
   return [...new Set(signals)].slice(0, 6)
+}
+
+function countGridCells(reviews: WeeklyReview[]): { filled: number; total: number } {
+  let filled = 0
+  let total = 0
+  for (const review of reviews) {
+    for (const row of review.goalGrid ?? []) {
+      for (const cell of row.days) {
+        total++
+        if (cell.trim()) filled++
+      }
+    }
+  }
+  return { filled, total }
 }
 
 export function computeInsights(
@@ -147,9 +185,18 @@ export function computeInsights(
   const mostSupportedGoal = goals.find((g) => g.id === mostSupportedGoalId)
 
   const recentMoods = sorted
-    .map((e) => e.mood?.trim())
+    .map((e) => e.mindNote?.trim() || e.mood?.trim())
     .filter((m): m is string => Boolean(m))
     .slice(0, 5)
+
+  const driverDays = sorted.filter((e) => e.dayType === 'driver').length
+  const passengerDays = sorted.filter((e) => e.dayType === 'passenger').length
+
+  const ratings = sorted.map((e) => e.dayRating).filter((r): r is number => r !== undefined)
+  const averageDayRating =
+    ratings.length > 0 ? Math.round((ratings.reduce((a, b) => a + b, 0) / ratings.length) * 10) / 10 : null
+
+  const grid = countGridCells(reviews)
 
   return {
     totalEntries: sorted.length,
@@ -160,5 +207,10 @@ export function computeInsights(
     commonWords: extractCommonWords(sorted),
     driftSignals: extractDriftSignals(sorted, reviews),
     patternNotes: generatePatternNotes(sorted, reviews),
+    driverDays,
+    passengerDays,
+    averageDayRating,
+    weeklyGridCellsFilled: grid.filled,
+    weeklyGridCellsTotal: grid.total,
   }
 }

@@ -3,12 +3,14 @@ import { NavLink } from 'react-router-dom'
 const navItems = [
   { to: '/', label: 'Today', icon: '◎' },
   { to: '/goals', label: 'Goals', icon: '◇' },
-  { to: '/entries', label: 'Entries', icon: '≡' },
+  { to: '/vision', label: 'Vision', icon: '◈' },
   { to: '/weekly', label: 'Week', icon: '◫' },
+  { to: '/entries', label: 'Entries', icon: '≡' },
   { to: '/coach', label: 'Coach', icon: '◉' },
-  { to: '/insights', label: 'Insights', icon: '◌' },
   { to: '/settings', label: 'Settings', icon: '⚙' },
 ]
+
+const sidebarExtraItems = [{ to: '/insights', label: 'Insights', icon: '◌' }]
 
 function NavItem({ to, label, icon }: { to: string; label: string; icon: string }) {
   return (
@@ -57,7 +59,7 @@ export function Sidebar() {
         <p className="mt-1 text-xs text-[var(--color-ink-muted)]">A small mirror</p>
       </div>
       <nav className="flex flex-col gap-1" aria-label="Main navigation">
-        {navItems.map((item) => (
+        {[...navItems, ...sidebarExtraItems].map((item) => (
           <NavLink
             key={item.to}
             to={item.to}

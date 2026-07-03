@@ -13,7 +13,7 @@ function matchesAny(text: string, terms: string[]): boolean {
 function pickGoalTitle(context: CoachContext | undefined, terms: string[]): string | undefined {
   const goals = context?.goals?.filter((g) => g.status === 'active') ?? []
   for (const goal of goals) {
-    const hay = `${goal.title} ${goal.why} ${goal.description}`.toLowerCase()
+    const hay = `${goal.title} ${goal.why} ${goal.description} ${goal.dailyAction}`.toLowerCase()
     if (terms.some((t) => hay.includes(t))) return goal.title
   }
   return goals[0]?.title
@@ -21,11 +21,16 @@ function pickGoalTitle(context: CoachContext | undefined, terms: string[]): stri
 
 export function generateMockCoachResponse(input: string, context?: CoachContext): string {
   const text = input.trim()
+  const latest = context?.latestEntry
+  const dayType = latest?.dayType
+
   if (!text) {
     return [
       '**Core signal** — You opened the space. That counts.',
       '**Value** — Honesty before action.',
-      '**Pattern** — Sometimes silence is avoidance wearing a calm face.',
+      dayType
+        ? `**Pattern** — Today is a ${dayType === 'driver' ? "Driver's" : "Passenger"} Day. ${dayType === 'driver' ? 'You have the wheel — one clear mission is enough.' : 'Life has the wheel — protect your non-negotiables and be gentle.'}`
+        : '**Pattern** — Sometimes silence is avoidance wearing a calm face.',
       '**One 1% action** — Name one thing on your mind in a single sentence.',
       '**Question** — What would "enough for today" look like?',
     ].join('\n\n')
@@ -71,7 +76,6 @@ export function generateMockCoachResponse(input: string, context?: CoachContext)
     ].join('\n\n')
   }
 
-  const latest = context?.latestEntry
   if (latest?.lesson) {
     return [
       '**Core signal** — You\'re reflecting, not just reacting.',
@@ -79,6 +83,16 @@ export function generateMockCoachResponse(input: string, context?: CoachContext)
       '**Pattern** — Lessons repeat until they\'re integrated, not until they\'re perfect.',
       `**One 1% action** — Revisit your lesson: "${latest.lesson.slice(0, 80)}${latest.lesson.length > 80 ? '…' : ''}" — what\'s one small way to live it today?`,
       '**Question** — What would change if you trusted yesterday\'s lesson for just today?',
+    ].join('\n\n')
+  }
+
+  if (latest?.wins?.trim()) {
+    return [
+      '**Core signal** — You named a win today.',
+      `**Value** — ${context?.profile?.vision?.split('.')[0] ?? 'Drive and peace together'}.`,
+      `**Pattern** — Wins matter: "${latest.wins.slice(0, 80)}${latest.wins.length > 80 ? '…' : ''}"`,
+      '**One 1% action** — Write one sentence: "Today I will ___" — small enough to finish.',
+      '**Question** — What made that win possible?',
     ].join('\n\n')
   }
 
@@ -100,16 +114,29 @@ export const mockCoachProvider: CoachProvider = {
 
 export function summarizeEntryForCoach(entry: {
   date: string
+  dayType?: string
+  dayRating?: number
   energy?: number
   mood?: string
   onePercentAction: string
+  missions?: { text: string; done: boolean }[]
+  wins?: string
   lesson?: string
   endOfDayResult?: string
+  bodyNote?: string
+  mindNote?: string
 }): string {
   const parts = [`Entry from ${entry.date}:`]
-  if (entry.energy) parts.push(`Energy: ${entry.energy}/5`)
-  if (entry.mood) parts.push(`Mood: ${entry.mood}`)
+  if (entry.dayType) parts.push(`Day type: ${entry.dayType}`)
+  if (entry.dayRating) parts.push(`Day rating: ${entry.dayRating}/10`)
+  else if (entry.energy) parts.push(`Energy: ${entry.energy}/5`)
+  if (entry.bodyNote) parts.push(`Body: ${entry.bodyNote}`)
+  if (entry.mindNote) parts.push(`Mind: ${entry.mindNote}`)
+  else if (entry.mood) parts.push(`Mood: ${entry.mood}`)
   parts.push(`1% action: ${entry.onePercentAction}`)
+  const missionCount = entry.missions?.filter((m) => m.text.trim()).length ?? 0
+  if (missionCount > 0) parts.push(`Missions logged: ${missionCount}`)
+  if (entry.wins) parts.push(`Wins: ${entry.wins}`)
   if (entry.endOfDayResult) parts.push(`Result: ${entry.endOfDayResult}`)
   if (entry.lesson) parts.push(`Lesson: ${entry.lesson}`)
   return parts.join('\n')

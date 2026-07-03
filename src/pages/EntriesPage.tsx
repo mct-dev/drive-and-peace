@@ -22,9 +22,14 @@ export function EntriesPage() {
         const blob = [
           e.onePercentAction,
           e.mood,
+          e.mindNote,
+          e.bodyNote,
           e.lesson,
           e.freeformText,
+          e.reflection,
+          e.wins,
           e.endOfDayResult,
+          ...e.missions.map((m) => m.text),
         ]
           .filter(Boolean)
           .join(' ')
@@ -184,7 +189,8 @@ export function EntriesPage() {
                     <div className="min-w-0 flex-1">
                       <p className="text-xs font-medium text-[var(--color-ink-muted)]">
                         {formatDisplayDate(entry.date)}
-                        {entry.energy && ` · Energy ${entry.energy}/5`}
+                        {entry.dayType && ` · ${entry.dayType === 'driver' ? "Driver's" : 'Passenger'} day`}
+                        {entry.dayRating && ` · Rating ${entry.dayRating}/10`}
                         {entry.mood && ` · ${entry.mood}`}
                       </p>
                       <p className="mt-1 text-sm text-[var(--color-ink)]">{entry.onePercentAction}</p>

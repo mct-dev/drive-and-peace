@@ -1,26 +1,26 @@
 import { useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useApp } from '../app/AppContext'
 import { Card } from '../components/Card'
 import { Button } from '../components/Button'
 import { TextField } from '../components/TextField'
-import { TextArea } from '../components/TextArea'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { exportStorageJSON, importStorageJSON } from '../data/storage'
+import { formatDisplayDate } from '../lib/dates'
 
 export function SettingsPage() {
-  const { data, updateProfile, replaceAllData, resetAllData } = useApp()
+  const { data, updateProfile, updateProgram, replaceAllData, resetAllData } = useApp()
   const [name, setName] = useState(data.profile.name)
-  const [why, setWhy] = useState(data.profile.why)
-  const [vision, setVision] = useState(data.profile.vision)
-  const [legacy, setLegacy] = useState(data.profile.legacy)
+  const [startDate, setStartDate] = useState(data.program.startDate)
   const [saved, setSaved] = useState(false)
   const [importError, setImportError] = useState<string | null>(null)
   const [confirmReset, setConfirmReset] = useState(false)
   const [confirmImport, setConfirmImport] = useState<string | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
 
-  const handleSaveProfile = () => {
-    updateProfile({ name, why, vision, legacy })
+  const handleSave = () => {
+    updateProfile({ name })
+    updateProgram({ startDate })
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
   }
@@ -55,9 +55,7 @@ export function SettingsPage() {
       const imported = importStorageJSON(confirmImport)
       replaceAllData(imported)
       setName(imported.profile.name)
-      setWhy(imported.profile.why)
-      setVision(imported.profile.vision)
-      setLegacy(imported.profile.legacy)
+      setStartDate(imported.program.startDate)
       setConfirmImport(null)
       setImportError(null)
     } catch (err) {
@@ -76,11 +74,22 @@ export function SettingsPage() {
       <Card title="Profile">
         <div className="space-y-4">
           <TextField label="Name" value={name} onChange={(e) => setName(e.target.value)} />
-          <TextArea label="Why" value={why} onChange={(e) => setWhy(e.target.value)} />
-          <TextArea label="Vision" value={vision} onChange={(e) => setVision(e.target.value)} />
-          <TextArea label="Legacy" value={legacy} onChange={(e) => setLegacy(e.target.value)} />
+          <TextField
+            label="Program start date (Day 1)"
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            hint={`Day 1 began ${formatDisplayDate(startDate)}`}
+          />
+          <p className="text-sm text-[var(--color-ink-muted)]">
+            Vision, mission, and legacy live on the{' '}
+            <Link to="/vision" className="font-medium text-[var(--color-accent)]">
+              Vision page
+            </Link>
+            .
+          </p>
           <div className="flex items-center gap-3">
-            <Button onClick={handleSaveProfile}>Save profile</Button>
+            <Button onClick={handleSave}>Save</Button>
             {saved && (
               <span className="text-sm text-[var(--color-accent)]" role="status">
                 Saved
@@ -124,7 +133,7 @@ export function SettingsPage() {
           No accounts, no servers, no analytics.
         </p>
         <p className="mt-3 text-xs text-[var(--color-ink-muted)]">
-          Drive + Peace v0.1.0 — local-first personal growth diary
+          Drive + Peace v0.2.0 — local-first 1% diary
         </p>
       </Card>
 
@@ -138,9 +147,7 @@ export function SettingsPage() {
           const fresh = resetAllData()
           setConfirmReset(false)
           setName(fresh.profile.name)
-          setWhy(fresh.profile.why)
-          setVision(fresh.profile.vision)
-          setLegacy(fresh.profile.legacy)
+          setStartDate(fresh.program.startDate)
         }}
         onCancel={() => setConfirmReset(false)}
       />

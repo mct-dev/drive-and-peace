@@ -31,6 +31,7 @@ export function CoachPage() {
         profile: data.profile,
         goals: data.goals,
         latestEntry,
+        program: data.program,
       })
       addCoachMessage({
         role: 'assistant',

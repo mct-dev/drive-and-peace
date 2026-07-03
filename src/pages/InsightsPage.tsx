@@ -33,7 +33,7 @@ export function InsightsPage() {
         />
       ) : (
         <>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <Card>
               <p className="text-2xl font-semibold text-[var(--color-ink)]">
                 {insights.totalEntries}
@@ -46,7 +46,27 @@ export function InsightsPage() {
               </p>
               <p className="text-xs text-[var(--color-ink-muted)]">This week</p>
             </Card>
+            <Card>
+              <p className="text-2xl font-semibold text-[var(--color-ink)]">
+                {insights.driverDays}
+              </p>
+              <p className="text-xs text-[var(--color-ink-muted)]">Driver days</p>
+            </Card>
+            <Card>
+              <p className="text-2xl font-semibold text-[var(--color-ink)]">
+                {insights.averageDayRating ?? '—'}
+              </p>
+              <p className="text-xs text-[var(--color-ink-muted)]">Avg day rating</p>
+            </Card>
           </div>
+
+          {insights.weeklyGridCellsTotal > 0 && (
+            <Card title="Weekly goal grid">
+              <p className="text-sm text-[var(--color-ink)]">
+                {insights.weeklyGridCellsFilled} of {insights.weeklyGridCellsTotal} cells filled
+              </p>
+            </Card>
+          )}
 
           {insights.mostSupportedGoalTitle && (
             <Card title="Most-supported goal">
