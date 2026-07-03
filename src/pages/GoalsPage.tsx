@@ -114,7 +114,7 @@ function GoalCard({
             Pause
           </Button>
         )}
-        {goal.status === 'paused' && (
+        {goal.status !== 'active' && (
           <Button variant="ghost" className="!px-3 !py-1.5 !text-xs" onClick={onReactivate}>
             Reactivate
           </Button>
