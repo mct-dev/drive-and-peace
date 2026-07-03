@@ -10,7 +10,13 @@ Drive + Peace is not a productivity tracker. It is a small mirror — helping yo
 - Original prompts, layout, and voice — not a copy of any existing diary
 - Built around presence without self-erasure: drive and peace together
 
-## How to run
+## Live app
+
+**Production:** https://mct-dev.github.io/drive-and-peace/
+
+Deployed automatically on every push to `main` via GitHub Actions.
+
+## How to run locally
 
 ```bash
 npm install

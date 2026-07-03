@@ -1,0 +1,36 @@
+---
+description: Deploy every delivery to production and include a test link in the final response
+alwaysApply: true
+---
+
+# Production deployment (required)
+
+Drive + Peace is deployed to **GitHub Pages** on every push to `main`.
+
+**Production URL:** https://mct-dev.github.io/drive-and-peace/
+
+## End-of-task checklist
+
+Before finishing any chunk of work, complete all of the following:
+
+1. **Verify locally**
+   - `npm test`
+   - `npm run build`
+
+2. **Ship to production**
+   - Commit and push your branch.
+   - Merge the change into `main` (open/update PR and merge, or push directly to `main` when appropriate).
+   - Confirm the **Deploy to GitHub Pages** workflow succeeds on `main` (`.github/workflows/deploy.yml`).
+
+3. **Final response must include a test link**
+   - Always end your summary with a **Live preview** section.
+   - Include the production URL: https://mct-dev.github.io/drive-and-peace/
+   - If deployment is still running, say so and note that the link will reflect changes within a few minutes after the workflow completes.
+   - Do not mark work complete without attempting deployment.
+
+## Notes
+
+- Vite `base` is `/drive-and-peace/` for GitHub Pages subpath hosting.
+- React Router uses `basename={import.meta.env.BASE_URL}`.
+- `dist/404.html` is generated at build time for SPA deep-link support on GitHub Pages.
+- Data remains local-only in the browser; production is a static frontend only.
