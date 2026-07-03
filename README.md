@@ -14,9 +14,9 @@ Drive + Peace is not a productivity tracker. It is a small mirror — helping yo
 
 **Production:** https://mct-dev.github.io/drive-and-peace/
 
-Deployed automatically on every push to `main` via GitHub Actions.
+Deployed automatically on every push to `main` via GitHub Actions (publishes to the `gh-pages` branch).
 
-**One-time setup:** If deploy fails, enable Pages under repo Settings → Pages → Source: **GitHub Actions**. See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+**One-time setup:** Settings → Pages → Source: **Deploy from a branch** → `gh-pages` / `(root)`. See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 ## How to run locally
 

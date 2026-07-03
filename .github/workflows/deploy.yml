@@ -6,24 +6,17 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
-# Do not cancel in-progress production deploys (GitHub Pages recommendation)
 concurrency:
   group: pages
   cancel-in-progress: false
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-        id: pages
 
       - uses: actions/setup-node@v4
         with:
@@ -33,25 +26,14 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
+      - run: touch dist/.nojekyll
 
-      - name: Fix artifact permissions
-        run: chmod -c -R +rX dist
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Publish to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          path: dist
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          publish_branch: gh-pages
 
   verify:
     needs: deploy
@@ -66,6 +48,6 @@ jobs:
       - name: Verify production site
         env:
           PRODUCTION_URL: https://mct-dev.github.io/drive-and-peace/
-          VERIFY_ATTEMPTS: 30
+          VERIFY_ATTEMPTS: 36
           VERIFY_DELAY_MS: 10000
         run: node scripts/verify-production.mjs
