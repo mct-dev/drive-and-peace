@@ -119,7 +119,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
                 ...g,
                 status,
                 updatedAt: nowISO(),
-                retiredAt: status === 'retired' ? nowISO() : g.retiredAt,
+                retiredAt: status === 'retired' ? nowISO() : undefined,
               }
             : g,
         ),

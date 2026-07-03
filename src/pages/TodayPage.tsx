@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useApp } from '../app/AppContext'
 import { Card } from '../components/Card'
@@ -26,6 +26,18 @@ export function TodayPage() {
   const [freeformText, setFreeformText] = useState(existing?.freeformText ?? '')
   const [saved, setSaved] = useState(false)
   const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    setEnergy(existing?.energy)
+    setMood(existing?.mood ?? '')
+    setOnePercentAction(existing?.onePercentAction ?? '')
+    setGoalId(existing?.goalId ?? '')
+    setPossibleObstacle(existing?.possibleObstacle ?? '')
+    setTinyVersion(existing?.tinyVersion ?? '')
+    setEndOfDayResult(existing?.endOfDayResult ?? '')
+    setLesson(existing?.lesson ?? '')
+    setFreeformText(existing?.freeformText ?? '')
+  }, [existing])
 
   const recent = [...data.dailyEntries]
     .filter((e) => e.date !== today)

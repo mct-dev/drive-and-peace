@@ -7,6 +7,7 @@ import { TextArea } from '../components/TextArea'
 import { Select } from '../components/Select'
 import { RatingInput } from '../components/RatingInput'
 import { EmptyState } from '../components/EmptyState'
+import { ConfirmDialog } from '../components/ConfirmDialog'
 import { formatDisplayDate } from '../lib/dates'
 
 export function EntriesPage() {
@@ -14,6 +15,7 @@ export function EntriesPage() {
   const [search, setSearch] = useState('')
   const [goalFilter, setGoalFilter] = useState('')
   const [editingId, setEditingId] = useState<string | null>(null)
+  const [confirmDelete, setConfirmDelete] = useState(false)
 
   const entries = useMemo(() => {
     return [...data.dailyEntries]
@@ -141,6 +143,21 @@ export function EntriesPage() {
               ]}
             />
             <TextArea
+              label="Possible obstacle"
+              value={form.possibleObstacle}
+              onChange={(e) => setForm((f) => ({ ...f, possibleObstacle: e.target.value }))}
+            />
+            <TextArea
+              label="Tiny version if the day goes sideways"
+              value={form.tinyVersion}
+              onChange={(e) => setForm((f) => ({ ...f, tinyVersion: e.target.value }))}
+            />
+            <TextArea
+              label="End-of-day result"
+              value={form.endOfDayResult}
+              onChange={(e) => setForm((f) => ({ ...f, endOfDayResult: e.target.value }))}
+            />
+            <TextArea
               label="Lesson"
               value={form.lesson}
               onChange={(e) => setForm((f) => ({ ...f, lesson: e.target.value }))}
@@ -155,19 +172,27 @@ export function EntriesPage() {
               <Button variant="ghost" onClick={() => setEditingId(null)}>
                 Cancel
               </Button>
-              <Button
-                variant="danger"
-                onClick={() => {
-                  deleteDailyEntry(editing.id)
-                  setEditingId(null)
-                }}
-              >
+              <Button variant="danger" onClick={() => setConfirmDelete(true)}>
                 Delete
               </Button>
             </div>
           </div>
         </Card>
       )}
+
+      <ConfirmDialog
+        open={confirmDelete}
+        title="Delete this entry?"
+        message="This will permanently remove this entry. This can't be undone."
+        confirmLabel="Delete"
+        variant="danger"
+        onConfirm={() => {
+          if (editing) deleteDailyEntry(editing.id)
+          setEditingId(null)
+          setConfirmDelete(false)
+        }}
+        onCancel={() => setConfirmDelete(false)}
+      />
 
       {entries.length === 0 ? (
         <EmptyState

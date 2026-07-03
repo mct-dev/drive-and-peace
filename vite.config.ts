@@ -3,8 +3,10 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
+const base = '/drive-and-peace/'
+
 export default defineConfig({
-  base: '/drive-and-peace/',
+  base: base,
   plugins: [
     react(),
     tailwindcss(),
@@ -18,7 +20,8 @@ export default defineConfig({
         theme_color: '#f5f4f1',
         background_color: '#f5f4f1',
         display: 'standalone',
-        start_url: '/',
+        start_url: base,
+        scope: base,
         icons: [
           {
             src: 'favicon.svg',
