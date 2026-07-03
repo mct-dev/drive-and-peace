@@ -80,7 +80,6 @@ export function TodayPage() {
   const [possibleObstacle, setPossibleObstacle] = useState(existing?.possibleObstacle ?? '')
   const [onePercentAction, setOnePercentAction] = useState(existing?.onePercentAction ?? '')
   const [saved, setSaved] = useState(false)
-  const [saving, setSaving] = useState(false)
 
   const recent = [...data.dailyEntries]
     .filter((e) => e.date !== today)
@@ -94,7 +93,6 @@ export function TodayPage() {
     const resolvedOnePercent = onePercentAction.trim() || firstMissionText(missions)
     if (!resolvedOnePercent) return
 
-    setSaving(true)
     upsertDailyEntry({
       id: existing?.id,
       date: today,
@@ -119,9 +117,8 @@ export function TodayPage() {
       endOfDayResult: endOfDayResult || undefined,
       lesson: lesson || undefined,
     })
-    setSaving(false)
     setSaved(true)
-    setTimeout(() => setSaved(false), 2000)
+    setTimeout(() => setSaved(false), 2500)
   }
 
   return (
@@ -328,7 +325,7 @@ export function TodayPage() {
       </div>
 
       <div className="flex items-center gap-3">
-        <Button onClick={handleSave} loading={saving} disabled={!canSave}>
+        <Button onClick={handleSave} disabled={!canSave}>
           {existing ? 'Update entry' : 'Save entry'}
         </Button>
         {!canSave && (
@@ -337,8 +334,8 @@ export function TodayPage() {
           </span>
         )}
         {saved && (
-          <span className="text-sm text-[var(--color-accent)]" role="status">
-            Saved
+          <span className="text-sm font-medium text-[var(--color-accent)]" role="status" aria-live="polite">
+            Saved ✓
           </span>
         )}
       </div>
