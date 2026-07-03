@@ -15,7 +15,7 @@ https://mct-dev.github.io/drive-and-peace/
 
 The workflow pushes built files to the `gh-pages` branch using `peaceiris/actions-gh-pages`.
 
-> **Note:** If **GitHub Actions** was selected as the Pages source, switch to **Deploy from a branch**. The `actions/deploy-pages` path was failing with `Deployment failed, try again later` on this repository even after Pages was enabled.
+> **Note on auto-build:** Pushes made with the default `GITHUB_TOKEN` do not always trigger a GitHub Pages build for branch-based hosting. The first live deploy may require a non-bot push to `gh-pages`. For fully automated deploys, add a repo secret named `GH_PAGES_TOKEN` (a fine-scoped personal access token with `repo` or `contents: write`) and set `personal_token: ${{ secrets.GH_PAGES_TOKEN }}` in the workflow.
 
 ## How it works
 
