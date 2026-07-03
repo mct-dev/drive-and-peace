@@ -1,5 +1,5 @@
 ---
-description: Deploy every delivery to production and include a test link in the final response
+description: Deploy every delivery to production, verify it is live, and include a test link in the final response
 alwaysApply: true
 ---
 
@@ -31,12 +31,21 @@ Before finishing any chunk of work, complete all of the following:
    - Commit and push your branch.
    - Merge the change into `main` (open/update PR and merge, or push directly to `main` when appropriate).
    - Confirm the **Deploy to GitHub Pages** workflow succeeds on `main` (`.github/workflows/deploy.yml`).
+   - The workflow must pass all three jobs: **build**, **deploy**, and **verify**.
 
-3. **Final response must include a test link**
+3. **Verify production after deploy (required)**
+   - Run `npm run verify:deploy` after the workflow completes, or wait for the workflow **verify** job to pass.
+   - Confirm HTTP 200 from https://mct-dev.github.io/drive-and-peace/
+   - Confirm the page contains `Drive + Peace` (the verify script checks this).
+   - If verification fails, do **not** mark the task complete. Diagnose, fix, redeploy, and re-verify.
+   - A 404 means GitHub Pages is not enabled or the deploy job failed — check Actions logs first.
+
+4. **Final response must include a test link**
    - Always end your summary with a **Live preview** section.
    - Include the production URL: https://mct-dev.github.io/drive-and-peace/
-   - If deployment is still running, say so and note that the link will reflect changes within a few minutes after the workflow completes.
-   - Do not mark work complete without attempting deployment.
+   - Only claim the site is live if `npm run verify:deploy` (or the workflow verify job) passed.
+   - If deployment or verification is still running, say so explicitly.
+   - Do not mark work complete without attempting deployment **and** verification.
 
 ## Notes
 
@@ -44,3 +53,4 @@ Before finishing any chunk of work, complete all of the following:
 - React Router uses `basename={import.meta.env.BASE_URL}`.
 - `dist/404.html` is generated at build time for SPA deep-link support on GitHub Pages.
 - Data remains local-only in the browser; production is a static frontend only.
+- Verification script: `scripts/verify-production.mjs` (also run via `npm run verify:deploy`).

@@ -19,8 +19,19 @@ No other secrets or paid services are required.
 ## How it works
 
 - Workflow: `.github/workflows/deploy.yml`
+- Jobs: **build** → **deploy** → **verify**
 - Runs `npm test` and `npm run build` on Ubuntu
 - Publishes the `dist/` folder to GitHub Pages
+- **verify** job curls production and checks for `Drive + Peace` in the HTML
+- Agents should also run `npm run verify:deploy` locally after deploy
+
+## Verify production manually
+
+```bash
+npm run verify:deploy
+```
+
+Retries for up to ~5 minutes. Exits non-zero if the site is not live.
 - Vite `base` is `/drive-and-peace/` for project-site hosting
 - `dist/404.html` is copied from `index.html` for client-side routing
 
