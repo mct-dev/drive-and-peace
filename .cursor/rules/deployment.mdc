@@ -9,6 +9,16 @@ Drive + Peace is deployed to **GitHub Pages** on every push to `main`.
 
 **Production URL:** https://mct-dev.github.io/drive-and-peace/
 
+## One-time prerequisite
+
+If deploy fails with *"Ensure GitHub Pages has been enabled"*, the repo admin must:
+
+1. Open https://github.com/mct-dev/drive-and-peace/settings/pages
+2. Set **Source** to **GitHub Actions**
+3. Re-run the deploy workflow on `main`
+
+See `docs/DEPLOYMENT.md` for details.
+
 ## End-of-task checklist
 
 Before finishing any chunk of work, complete all of the following:

@@ -16,6 +16,8 @@ Drive + Peace is not a productivity tracker. It is a small mirror — helping yo
 
 Deployed automatically on every push to `main` via GitHub Actions.
 
+**One-time setup:** If deploy fails, enable Pages under repo Settings → Pages → Source: **GitHub Actions**. See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+
 ## How to run locally
 
 ```bash
