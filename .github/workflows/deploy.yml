@@ -10,15 +10,20 @@ permissions:
   pages: write
   id-token: write
 
+# Do not cancel in-progress production deploys (GitHub Pages recommendation)
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+        id: pages
 
       - uses: actions/setup-node@v4
         with:
@@ -28,6 +33,9 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
+
+      - name: Fix artifact permissions
+        run: chmod -c -R +rX dist
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
@@ -41,35 +49,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Ensure GitHub Pages is enabled
-        id: pages
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set +e
-          gh api "repos/${{ github.repository }}/pages" >/dev/null 2>&1
-          if [ $? -eq 0 ]; then
-            echo "Pages already enabled"
-            echo "enabled=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          echo "Attempting to enable GitHub Pages (workflow source)…"
-          gh api "repos/${{ github.repository }}/pages" -X POST -f build_type=workflow
-          if [ $? -eq 0 ]; then
-            echo "Pages enabled via API"
-            echo "enabled=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          echo "::error::GitHub Pages is not enabled for this repository."
-          echo "::error::Open https://github.com/${{ github.repository }}/settings/pages"
-          echo "::error::Set Source to GitHub Actions, then re-run this workflow."
-          echo "enabled=false" >> "$GITHUB_OUTPUT"
-          exit 1
-
-      - uses: actions/configure-pages@v5
-
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
