@@ -24,6 +24,14 @@ function GoalForm({
 
   const isEdit = Boolean(initial?.id)
 
+  const changed =
+    title.trim() !== (initial?.title ?? '').trim() ||
+    description.trim() !== (initial?.description ?? '').trim() ||
+    why.trim() !== (initial?.why ?? '').trim()
+
+  const reasonRequired = isEdit && changed
+  const reasonMissing = reasonRequired && !reasonForChange.trim()
+
   return (
     <div className="space-y-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
       <TextField label="Title" value={title} onChange={(e) => setTitle(e.target.value)} required />
@@ -38,7 +46,11 @@ function GoalForm({
           label="Reason for change"
           value={reasonForChange}
           onChange={(e) => setReasonForChange(e.target.value)}
-          hint="Required to preserve history when editing"
+          hint={
+            reasonMissing
+              ? 'Please add a reason — this preserves the goal’s history.'
+              : 'Required when you change a goal — this preserves its history.'
+          }
         />
       )}
       <div className="flex gap-2">
@@ -51,7 +63,7 @@ function GoalForm({
               reasonForChange: reasonForChange.trim() || undefined,
             })
           }
-          disabled={!title.trim()}
+          disabled={!title.trim() || reasonMissing}
         >
           Save goal
         </Button>
