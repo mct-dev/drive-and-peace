@@ -16,11 +16,21 @@
     @apply antialiased;
     background-color: var(--color-surface);
     color: var(--color-ink);
+    overflow-x: hidden;
+    max-width: 100%;
   }
 
   body {
     @apply min-h-dvh font-sans;
     margin: 0;
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+
+  #root {
+    min-height: 100dvh;
+    overflow-x: hidden;
+    max-width: 100%;
   }
 
   * {

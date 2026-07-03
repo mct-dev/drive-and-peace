@@ -49,7 +49,7 @@ export function CoachPage() {
   }
 
   return (
-    <div className="flex h-[calc(100dvh-8rem)] flex-col space-y-4 md:h-auto">
+    <div className="flex flex-col space-y-4 md:h-auto">
       <header>
         <p className="text-sm text-[var(--color-ink-muted)]">Coach</p>
         <h1 className="mt-1 text-2xl font-semibold tracking-tight">A quiet second voice</h1>

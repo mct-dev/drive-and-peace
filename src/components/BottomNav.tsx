@@ -15,8 +15,9 @@ function NavItem({ to, label, icon }: { to: string; label: string; icon: string 
     <NavLink
       to={to}
       end={to === '/'}
+      aria-label={label}
       className={({ isActive }) =>
-        `flex flex-col items-center gap-0.5 rounded-lg px-2 py-1.5 text-[10px] font-medium transition-colors ${
+        `flex min-w-0 flex-col items-center justify-center gap-0.5 rounded-lg px-0.5 py-1.5 text-[9px] font-medium transition-colors ${
           isActive
             ? 'text-[var(--color-accent)]'
             : 'text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]'
@@ -26,7 +27,7 @@ function NavItem({ to, label, icon }: { to: string; label: string; icon: string 
       <span className="text-base leading-none" aria-hidden>
         {icon}
       </span>
-      <span>{label}</span>
+      <span className="w-full truncate text-center leading-tight">{label}</span>
     </NavLink>
   )
 }
@@ -34,10 +35,10 @@ function NavItem({ to, label, icon }: { to: string; label: string; icon: string 
 export function BottomNav() {
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-40 border-t border-[var(--color-border)] bg-[var(--color-surface-raised)]/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden"
+      className="fixed inset-x-0 bottom-0 z-50 w-full max-w-[100vw] border-t border-[var(--color-border)] bg-[var(--color-surface-raised)]/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden"
       aria-label="Main navigation"
     >
-      <div className="mx-auto flex max-w-lg justify-around px-1 py-1.5">
+      <div className="mx-auto grid w-full max-w-lg grid-cols-7 gap-0 px-0.5 py-1">
         {navItems.map((item) => (
           <NavItem key={item.to} {...item} />
         ))}
