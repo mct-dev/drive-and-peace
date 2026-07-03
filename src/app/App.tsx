@@ -3,6 +3,7 @@ import { AppProvider } from './AppContext'
 import { AppShell } from '../components/AppShell'
 import { TodayPage } from '../pages/TodayPage'
 import { GoalsPage } from '../pages/GoalsPage'
+import { VisionPage } from '../pages/VisionPage'
 import { EntriesPage } from '../pages/EntriesPage'
 import { WeeklyReviewPage } from '../pages/WeeklyReviewPage'
 import { CoachPage } from '../pages/CoachPage'
@@ -17,6 +18,7 @@ export default function App() {
           <Route element={<AppShell />}>
             <Route index element={<TodayPage />} />
             <Route path="goals" element={<GoalsPage />} />
+            <Route path="vision" element={<VisionPage />} />
             <Route path="entries" element={<EntriesPage />} />
             <Route path="weekly" element={<WeeklyReviewPage />} />
             <Route path="coach" element={<CoachPage />} />
